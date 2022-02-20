@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name          Undiscord+
+// @name          Undiscord+Randomness
 // @description   Wipe your Discord messages fast and easy
 // @author        https://github.com/abbydiode
-// @namespace     https://github.com/abbydiode/UndiscordPlus
-// @version       5.1.6
+// @namespace     https://github.com/theRoboxx/UndiscordPlus
+// @version       5.1.7
 // @match         https://*.discord.com/*
-// @downloadURL   https://raw.githubusercontent.com/abbydiode/undiscordPlus/main/UndiscordPlus.user.js
-// @homepageURL   https://github.com/abbydiode/UndiscordPlus
+// @downloadURL   https://raw.githubusercontent.com/theRoboxx/undiscordPlus/main/UndiscordPlus.user.js
+// @homepageURL   https://github.com/theRoboxx/UndiscordPlus
 // @supportURL    https://github.com/abbydiode/UndiscordPlus/issues
 // @license       MIT
 // ==/UserScript==
@@ -40,7 +40,14 @@ async function deleteMessages(authToken, authorId, guildId, channelId, minId, ma
     let throttledTotalTime = 0;
     let offset = 0;
     let iterations = -1;
+    let randomSearchDelay = 0;
+    let randomDeleteDelay = 0;
+    let waitMin = 1000;
+    let waitMax = 3000;             //between 1 and 3 seconds random delay 
 
+    const generateRandomNumber = (min, max) =>  {
+        return Math.floor(Math.random() * (max - min) + min);
+    };
     const wait = async ms => new Promise(done => setTimeout(done, ms));
     const msToHMS = s => `${s / 3.6e6 | 0}h ${(s % 3.6e6) / 6e4 | 0}m ${(s % 6e4) / 1000 | 0}s`;
     const escapeHTML = html => html.replace(/[&<"']/g, m => ({ '&': '&amp;', '<': '&lt;', '"': '&quot;', '\'': '&#039;' })[m]);
@@ -158,6 +165,8 @@ async function deleteMessages(authToken, authorId, guildId, channelId, minId, ma
                 const message = messagesToDelete[i];
                 if (stopHndl && stopHndl() === false) return end(log.error('Stopped by you!'));
 
+                randomDeleteDelay = deleteDelay + generateRandomNumber(waitMin, waitMax);
+              
                 log.debug(`${((deleteCount + 1) / grandTotal * 100).toFixed(2)}% (${deleteCount + 1}/${grandTotal})`,
                     `Deleting ID:${redact(message.id)} <b>${redact(message.author.username + '#' + message.author.discriminator)} <small>(${redact(new Date(message.timestamp).toLocaleString())})</small>:</b> <i>${redact(message.content).replace(/\n/g, '↵')}</i>`,
                     message.attachments.length ? redact(JSON.stringify(message.attachments)) : '');
@@ -198,8 +207,8 @@ async function deleteMessages(authToken, authorId, guildId, channelId, minId, ma
                         failCount++;
                     }
                 }
-
-                await wait(deleteDelay);
+                log.verb(`Deleting next messages in ${randomDeleteDelay}ms...`);
+                await wait(randomDeleteDelay);
             }
 
             if (skippedMessages.length > 0) {
@@ -208,8 +217,9 @@ async function deleteMessages(authToken, authorId, guildId, channelId, minId, ma
                 log.verb(`Found ${skippedMessages.length} system messages! Decreasing grandTotal to ${grandTotal} and increasing offset to ${offset}.`);
             }
 
-            log.verb(`Searching next messages in ${searchDelay}ms...`, (offset ? `(offset: ${offset})` : ''));
-            await wait(searchDelay);
+            randomSearchDelay = searchDelay + generateRandomNumber(waitMin, waitMax);
+            log.verb(`Searching next messages in ${randomSearchDelay}ms...`, (offset ? `(offset: ${offset})` : ''));
+            await wait(randomSearchDelay);  
 
             if (stopHndl && stopHndl() === false) return end(log.error('Stopped by you!'));
 
@@ -308,12 +318,12 @@ function initializeUI() {
                     <span>Search Delay <a
                     href="https://github.com/abbydiode/UndiscordPlus/wiki/About-Delays" title="Help"
                     target="_blank">?</a><br>
-                        <input id="searchDelay" type="number" value="100" min="100" step="100"><br>
+                        <input id="searchDelay" type="number" value="3000" min="100" step="100"><br>
                     </span>
                     <span>Delete Delay <a
                     href="https://github.com/abbydiode/UndiscordPlus/wiki/About-Delays" title="Help"
                     target="_blank">?</a><br>
-                        <input id="deleteDelay" type="number" value="1000" min="100" step="100">
+                        <input id="deleteDelay" type="number" value="2000" min="100" step="100">
                     </span>
                 </div>
                 <hr>
