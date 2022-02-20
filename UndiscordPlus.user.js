@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name          Undiscord+Randomness
+// @name          Undiscord+
 // @description   Wipe your Discord messages fast and easy
 // @author        https://github.com/abbydiode
-// @namespace     https://github.com/theRoboxx/UndiscordPlus
-// @version       5.1.7
+// @namespace     https://github.com/abbydiode/UndiscordPlus
+// @version       5.1.6
 // @match         https://*.discord.com/*
-// @downloadURL   https://raw.githubusercontent.com/theRoboxx/undiscordPlus/main/UndiscordPlus.user.js
-// @homepageURL   https://github.com/theRoboxx/UndiscordPlus
+// @downloadURL   https://raw.githubusercontent.com/abbydiode/undiscordPlus/main/UndiscordPlus.user.js
+// @homepageURL   https://github.com/abbydiode/UndiscordPlus
 // @supportURL    https://github.com/abbydiode/UndiscordPlus/issues
 // @license       MIT
 // ==/UserScript==
@@ -29,7 +29,7 @@
  * @author abbydiode <https://www.github.com/abbydiode>
  * @see https://github.com/abbydiode/UndiscordPlus
  */
-async function deleteMessages(authToken, authorId, guildId, channelId, minId, maxId, content, hasLink, hasFile, includeNSFW, ascendingOrder, includePinned, searchDelay, deleteDelay, extLogger, stopHndl, onProgress) {
+async function deleteMessages(authToken, authorId, guildId, channelId, minId, maxId, content, hasLink, hasFile, includeNSFW, activateRandomness, ascendingOrder, includePinned, searchDelay, deleteDelay, extLogger, stopHndl, onProgress) {
     const start = new Date();
     let deleteCount = 0;
     let failCount = 0;
@@ -42,9 +42,10 @@ async function deleteMessages(authToken, authorId, guildId, channelId, minId, ma
     let iterations = -1;
     let randomSearchDelay = 0;
     let randomDeleteDelay = 0;
-    let waitMin = 1000;
-    let waitMax = 3000;             //between 1 and 3 seconds random delay 
-
+    let delayMin = 1000;
+    let delayMax = 3000;             // random delay between 1 and 3 seconds
+    
+      
     const generateRandomNumber = (min, max) =>  {
         return Math.floor(Math.random() * (max - min) + min);
     };
@@ -164,8 +165,12 @@ async function deleteMessages(authToken, authorId, guildId, channelId, minId, ma
             for (let i = 0; i < messagesToDelete.length; i++) {
                 const message = messagesToDelete[i];
                 if (stopHndl && stopHndl() === false) return end(log.error('Stopped by you!'));
-
-                randomDeleteDelay = deleteDelay + generateRandomNumber(waitMin, waitMax);
+                
+                if (activateRandomness === true){ 
+                    randomDeleteDelay = deleteDelay + generateRandomNumber(delayMin, delayMax);
+                } else {
+                    randomDeleteDelay = deleteDelay;
+                }
               
                 log.debug(`${((deleteCount + 1) / grandTotal * 100).toFixed(2)}% (${deleteCount + 1}/${grandTotal})`,
                     `Deleting ID:${redact(message.id)} <b>${redact(message.author.username + '#' + message.author.discriminator)} <small>(${redact(new Date(message.timestamp).toLocaleString())})</small>:</b> <i>${redact(message.content).replace(/\n/g, '↵')}</i>`,
@@ -207,7 +212,7 @@ async function deleteMessages(authToken, authorId, guildId, channelId, minId, ma
                         failCount++;
                     }
                 }
-                log.verb(`Deleting next messages in ${randomDeleteDelay}ms...`);
+                if (activateRandomness) log.verb(`Deleting next messages in ${randomDeleteDelay}ms...`);
                 await wait(randomDeleteDelay);
             }
 
@@ -217,7 +222,12 @@ async function deleteMessages(authToken, authorId, guildId, channelId, minId, ma
                 log.verb(`Found ${skippedMessages.length} system messages! Decreasing grandTotal to ${grandTotal} and increasing offset to ${offset}.`);
             }
 
-            randomSearchDelay = searchDelay + generateRandomNumber(waitMin, waitMax);
+            if (activateRandomness === true){ 
+                randomSearchDelay = searchDelay + generateRandomNumber(delayMin, delayMax);
+            } else {
+                randomSearchDelay = searchDelay;
+            }
+            
             log.verb(`Searching next messages in ${randomSearchDelay}ms...`, (offset ? `(offset: ${offset})` : ''));
             await wait(randomSearchDelay);  
 
@@ -323,7 +333,8 @@ function initializeUI() {
                     <span>Delete Delay <a
                     href="https://github.com/abbydiode/UndiscordPlus/wiki/About-Delays" title="Help"
                     target="_blank">?</a><br>
-                        <input id="deleteDelay" type="number" value="2000" min="100" step="100">
+                        <input id="deleteDelay" type="number" value="2000" min="100" step="100"> <br>
+                        <label><input id="activateRandomness" type="checkbox" checked>Add random Search/Delete Delay</label><br>
                     </span>
                 </div>
                 <hr>
@@ -396,6 +407,7 @@ function initializeUI() {
         const hasLink = $('input#hasLink').checked;
         const hasFile = $('input#hasFile').checked;
         const includeNsfw = $('input#includeNsfw').checked;
+        const activateRandomness = $('input#activateRandomness').checked;
         const includePinned = $('input#includePinned').checked;
         const ascendingOrder = $('input#ascendingOrder').checked;
         const searchDelay = parseInt($('input#searchDelay').value.trim());
@@ -434,7 +446,7 @@ function initializeUI() {
 
         stop = stopButton.disabled = !(startButton.disabled = true);
         for (let i = 0; i < channelIds.length; i++) {
-            await deleteMessages(authToken, authorId, guildId, channelIds[i], minId || minDate, maxId || maxDate, content, hasLink, hasFile, includeNsfw, ascendingOrder, includePinned, searchDelay, deleteDelay, logger, stopHandle, onProgress);
+            await deleteMessages(authToken, authorId, guildId, channelIds[i], minId || minDate, maxId || maxDate, content, hasLink, hasFile, includeNsfw, activateRandomness, ascendingOrder, includePinned, searchDelay, deleteDelay, logger, stopHandle, onProgress);
             stop = stopButton.disabled = !(startButton.disabled = false);
         }
     };
