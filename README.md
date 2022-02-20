@@ -6,7 +6,7 @@
 ## Disclaimer
 
 I just wanted to add a bit of randomness to the existing code of [abbydiode's UndiscordPlus](https://github.com/abbydiode/UndiscordPlus).
-My goal is to include a button to toggle the randomeness and then merge it with the main repository.
+My goal is to include a button to toggle the randomness and then merge it with the main repository.
 
 ## Instructions
 
