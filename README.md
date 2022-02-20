@@ -3,6 +3,10 @@
 # Wipe your Discord messages fast and easy
 
 > ⚠️ **Any tool that automates actions on user accounts, including this one, could result in account termination.** [Use at your own risk!](https://support.discordapp.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots-)
+## Disclaimer
+
+I just wanted to add a bit of randomness to the existing code of [abbydiode's UndiscordPlus](https://github.com/abbydiode/UndiscordPlus).
+My goal is to include a button to toggle the randomeness and then merge it with the main repository.
 
 ## Instructions
 
@@ -13,7 +17,7 @@
     - Microsoft Edge: [Tampermonkey](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd) or [Violentmonkey](https://microsoftedge.microsoft.com/addons/detail/violentmonkey/eeagobfjdenkkddmbclomhiblgggliao)  
     - Opera: [Tampermonkey](https://addons.opera.com/extensions/details/tampermonkey-beta/) or [Violentmonkey](https://addons.opera.com/extensions/details/violent-monkey/)  
 
-2. Install [Undiscord+](https://github.com/abbydiode/UndiscordPlus/raw/main/UndiscordPlus.user.js) from this repository.
+2. Install [Undiscord+](https://github.com/theRoboxx/UndiscordPlus/raw/main/UndiscordPlus.user.js) from this repository.
 
 3. Open [Discord](https://discord.com/channels/@me) in your __browser__ and go to the channel or private conversation that you would like to be wiped.
 
@@ -29,11 +33,7 @@
 
 ## Information
 
-If you find an issue please [open an issue here](https://github.com/abbydiode/UndiscordPlus/issues).
-
-If you need help check out the [wiki](https://github.com/abbydiode/UndiscordPlus/wiki) for helpful articles, or feel free to [start a discussion](https://github.com/abbydiode/UndiscordPlus/discussions).
-
-This project is a fork of [victornpb's deleteDiscordMessages](https://github.com/victornpb/deleteDiscordMessages).
+This project is a fork of [abbydiode's UndiscordPlus](https://github.com/abbydiode/UndiscordPlus).
 
 ## Disclaimer
 
