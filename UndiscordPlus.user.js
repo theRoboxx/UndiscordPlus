@@ -1,13 +1,12 @@
 // ==UserScript==
-// @name          Undiscord+
+// @name          Undiscord+Random
 // @description   Wipe your Discord messages fast and easy
-// @author        https://github.com/abbydiode
-// @namespace     https://github.com/abbydiode/UndiscordPlus
+// @author        https://github.com/theRoboxx
 // @version       5.1.6
 // @match         https://*.discord.com/*
-// @downloadURL   https://raw.githubusercontent.com/abbydiode/undiscordPlus/main/UndiscordPlus.user.js
-// @homepageURL   https://github.com/abbydiode/UndiscordPlus
-// @supportURL    https://github.com/abbydiode/UndiscordPlus/issues
+// @downloadURL   https://raw.githubusercontent.com/theRoboxx/undiscordPlus/main/UndiscordPlus.user.js
+// @homepageURL   https://github.com/theRoboxx/UndiscordPlus
+// @supportURL    https://github.com/theRoboxx/UndiscordPlus/issues
 // @license       MIT
 // ==/UserScript==
 
@@ -44,8 +43,8 @@ async function deleteMessages(authToken, authorId, guildId, channelId, minId, ma
     let randomDeleteDelay = 0;
     let delayMin = 1000;
     let delayMax = 3000;             // random delay between 1 and 3 seconds
-    
-      
+
+
     const generateRandomNumber = (min, max) =>  {
         return Math.floor(Math.random() * (max - min) + min);
     };
@@ -165,13 +164,13 @@ async function deleteMessages(authToken, authorId, guildId, channelId, minId, ma
             for (let i = 0; i < messagesToDelete.length; i++) {
                 const message = messagesToDelete[i];
                 if (stopHndl && stopHndl() === false) return end(log.error('Stopped by you!'));
-                
-                if (activateRandomness === true){ 
+
+                if (activateRandomness === true){
                     randomDeleteDelay = deleteDelay + generateRandomNumber(delayMin, delayMax);
                 } else {
                     randomDeleteDelay = deleteDelay;
                 }
-              
+
                 log.debug(`${((deleteCount + 1) / grandTotal * 100).toFixed(2)}% (${deleteCount + 1}/${grandTotal})`,
                     `Deleting ID:${redact(message.id)} <b>${redact(message.author.username + '#' + message.author.discriminator)} <small>(${redact(new Date(message.timestamp).toLocaleString())})</small>:</b> <i>${redact(message.content).replace(/\n/g, '↵')}</i>`,
                     message.attachments.length ? redact(JSON.stringify(message.attachments)) : '');
@@ -222,14 +221,14 @@ async function deleteMessages(authToken, authorId, guildId, channelId, minId, ma
                 log.verb(`Found ${skippedMessages.length} system messages! Decreasing grandTotal to ${grandTotal} and increasing offset to ${offset}.`);
             }
 
-            if (activateRandomness === true){ 
+            if (activateRandomness === true){
                 randomSearchDelay = searchDelay + generateRandomNumber(delayMin, delayMax);
             } else {
                 randomSearchDelay = searchDelay;
             }
-            
+
             log.verb(`Searching next messages in ${randomSearchDelay}ms...`, (offset ? `(offset: ${offset})` : ''));
-            await wait(randomSearchDelay);  
+            await wait(randomSearchDelay);
 
             if (stopHndl && stopHndl() === false) return end(log.error('Stopped by you!'));
 
